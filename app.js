@@ -11,7 +11,7 @@ window.addEventListener('load', () => {
             });
         }
         
-        static attachIcon(parent, width, height) {
+        static attachIconNode(parent, width, height) {
             this.iconCanvas = document.createElement('canvas');
             this.iconCanvas.setAttribute('class', 'icon');
             this.iconCanvas.setAttribute('id', 'icon1'); // change it
@@ -52,8 +52,11 @@ window.addEventListener('load', () => {
 
             this.tempDescriptionNode = document.createElement('div');
             this.tempDescriptionNode.classList.add('temperature-description');
+
+            this.dayNode = document.createElement('h2');
             
-            Utills.attachIcon.call(this, row, 64, 64);
+            Utills.attachIconNode.call(this, row, 64, 64);
+            Utills.appendNodes(row, this.dayNode);
             Utills.appendNodes(this.degreeSectionNode, this.tempDayNode, this.tempNightNode, this.spanNode);
             Utills.appendNodes(row, this.degreeSectionNode);
             Utills.appendNodes(row, this.tempDescriptionNode);
@@ -85,6 +88,14 @@ window.addEventListener('load', () => {
         set tempNight(value) {
             this.tempNightNode.textContent = Math.round(value);
         }
+
+        get dayName() {
+            return this.dayNode.textContent;
+        }
+
+        set dayName(value) {
+            this.dayNode.textContent = value;
+        }
     
     }
     
@@ -100,9 +111,12 @@ window.addEventListener('load', () => {
             
             this.locationNode = document.createElement('h1');
             this.locationNode.classList.add('location-timezone');
+
+            this.dayNode = document.createElement('h2');
             
             Utills.appendNodes(section, this.locationNode);
-            Utills.attachIcon.call(this, section, 128, 128);
+            Utills.attachIconNode.call(this, section, 128, 128);
+            Utills.appendNodes(section, this.dayNode);
             Utills.appendNodes(parent, section);
         }
 
@@ -117,32 +131,38 @@ window.addEventListener('load', () => {
         set location(value) {
             this.locationNode.textContent = value;
         }
+
+        get dayName() {
+            return this.dayNode.textContent;
+        }
+
+        set dayName(value) {
+            this.dayNode.textContent = value;
+        }
         
     }
     
     class Day {
 
         constructor(data, timezone) {
-            this.name = this.getFullDay(data.time * 1000, timezone);
-            this.fullName = this.getDayOfWeek(data.time * 1000, timezone);
-            this.dayTemperature = Math.round(data.temperatureMax);
-            this.nightTemperature = Math.round(data.temperatureMin);
+            this.time = data.time;
+            this.zone = timezone;
         }
 
-        static createDays(dailyData, timezone) {
+        static createDays(weekData, timezone) {
             const days = [];
-            dailyData.forEach(element => {
-                days.push(new Day(element, timezone));
+            weekData.forEach(dayData => {
+                days.push(new Day(dayData, timezone));
             });
             return days;
         }
 
-        getFullDay(time, zone) {
-            return moment(time).tz(zone).format('dddd, MMMM Do');
+        get fullDay() {
+            return moment(this.time * 1000).tz(this.zone).format('dddd, MMMM Do');
         }
 
-        getDayOfWeek(time, zone) {
-            return moment(time).tz(zone).format('ddd');
+        get weekDay() {
+            return moment(this.time * 1000).tz(this.zone).format('ddd');
         }
 
     }
@@ -161,6 +181,7 @@ window.addEventListener('load', () => {
         fillToday(data, timezone) {
             const today = this.description;
             today.location = timezone;
+            today.dayName = this.days[0].fullDay;
             
             const icon = data.icon;
             Utills.setIcon(icon, today.iconCanvas);
@@ -170,6 +191,7 @@ window.addEventListener('load', () => {
             data.forEach((dayData, i) => {
                 const {temperatureMax, temperatureMin, icon} = dayData;
                 const cardDay = this.week[i];
+                cardDay.dayName = this.days[i].weekDay;
 
                 Utills.setIcon(icon, cardDay.iconCanvas);
                 
@@ -192,11 +214,9 @@ window.addEventListener('load', () => {
         }
 
         fillContent(data) {
-            this.fillToday(data.currently, data.timezone);
-            
             let weekData = data.daily.data;
             this.days = Day.createDays(weekData, data.timezone);
-            
+            this.fillToday(data.currently, data.timezone);
             this.fillWeek(weekData);
         }
 
@@ -222,6 +242,7 @@ window.addEventListener('load', () => {
                     return response.json();
                 })
                 .then(data => {
+                    console.log(data);
                     manager.fillContent(data);
                     console.log(data);
                 })
