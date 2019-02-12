@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WeatherApp</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="vendors/css/normalize.css">
+</head>
+<body>
+
+    <div class="location-section">
+        <h1 class="location-timezone">Timezone</h1>
+        <canvas class="icon" id="icon1" width="128" height="128"></canvas>
+    </div>
+
+    <div class="temperature-section">
+        <div class="degree-section">
+            <h2 class="temperature-degree-day">34</h2>
+            <h2 class="temperature-degree-night">34</h2>
+            <span>&#8457;</span>
+        </div>
+        <div class="temperature-description">Very very cold</div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.23/moment-timezone-with-data.min.js"></script>
+    <script src="vendors/js/skycons.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
