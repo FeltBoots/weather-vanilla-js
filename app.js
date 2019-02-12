@@ -10,6 +10,22 @@ window.addEventListener('load', () => {
                 parent.appendChild(child);
             });
         }
+        
+        static attachIcon(parent, width, height) {
+            this.iconCanvas = document.createElement('canvas');
+            this.iconCanvas.setAttribute('class', 'icon');
+            this.iconCanvas.setAttribute('id', 'icon1'); // change it
+            this.iconCanvas.setAttribute('width', width); 
+            this.iconCanvas.setAttribute('height', height); 
+            Utills.appendNodes(parent, this.iconCanvas);
+        }
+        
+        static setIcon(icon, iconID, color="white") {
+            const skycons = new Skycons({"color": color});
+            const currentIcon = icon.replace(/-/g, '_').toUpperCase();
+            skycons.play();
+            skycons.set(iconID, Skycons[currentIcon]);
+        }
     }
     
     class Card {
@@ -37,6 +53,7 @@ window.addEventListener('load', () => {
             this.tempDescriptionNode = document.createElement('div');
             this.tempDescriptionNode.classList.add('temperature-description');
             
+            Utills.attachIcon.call(this, row, 64, 64);
             Utills.appendNodes(this.degreeSectionNode, this.tempDayNode, this.tempNightNode, this.spanNode);
             Utills.appendNodes(row, this.degreeSectionNode);
             Utills.appendNodes(row, this.tempDescriptionNode);
@@ -84,13 +101,8 @@ window.addEventListener('load', () => {
             this.locationNode = document.createElement('h1');
             this.locationNode.classList.add('location-timezone');
             
-            this.iconCanvas = document.createElement('canvas');
-            this.iconCanvas.setAttribute("class", "icon");
-            this.iconCanvas.setAttribute("id", "icon1"); // change it
-            this.iconCanvas.setAttribute("width", "128"); 
-            this.iconCanvas.setAttribute("height", "128"); 
-            
-            Utills.appendNodes(section, this.locationNode, this.iconCanvas);
+            Utills.appendNodes(section, this.locationNode);
+            Utills.attachIcon.call(this, section, 128, 128);
             Utills.appendNodes(parent, section);
         }
 
@@ -149,26 +161,31 @@ window.addEventListener('load', () => {
         fillToday(data, timezone) {
             const today = this.description;
             today.location = timezone;
+            
+            const icon = data.icon;
+            Utills.setIcon(icon, today.iconCanvas);
         }
 
         fillWeek(data) {
             data.forEach((dayData, i) => {
-                const {temperatureMax, temperatureMin} = dayData;
-                const day = this.week[i];
-                
-                day.tempDay = temperatureMax;
-                day.tempNight = temperatureMin;
+                const {temperatureMax, temperatureMin, icon} = dayData;
+                const cardDay = this.week[i];
 
-                day.degreeSectionNode.addEventListener('click', () => {
-                    if (day.spanNode.textContent == 'F') { // Change to smt more interesting
-                        day.spanNode.textContent = 'C';
+                Utills.setIcon(icon, cardDay.iconCanvas);
+                
+                cardDay.tempDay = temperatureMax;
+                cardDay.tempNight = temperatureMin;
+
+                cardDay.degreeSectionNode.addEventListener('click', () => {
+                    if (cardDay.spanNode.textContent == 'F') { // Change to smt more interesting
+                        cardDay.spanNode.textContent = 'C';
                         const celsius = value => (value - 32) * (5 / 9);
-                        day.tempDay = celsius(day.tempDay);
-                        day.tempNight = celsius(day.tempNight);
+                        cardDay.tempDay = celsius(cardDay.tempDay);
+                        cardDay.tempNight = celsius(cardDay.tempNight);
                     } else {
-                        day.spanNode.textContent = 'F';
-                        day.tempDay = temperatureMax;
-                        day.tempNight = temperatureMin;
+                        cardDay.spanNode.textContent = 'F';
+                        cardDay.tempDay = temperatureMax;
+                        cardDay.tempNight = temperatureMin;
                     }
                 });   
             });
@@ -210,12 +227,4 @@ window.addEventListener('load', () => {
                 })
         });    
     }
-    
-    function setIcon(icon, iconID) {
-        const skycons = new Skycons({"color": "white"});
-        const currentIcon = icon.replace(/-/g, '_').toUpperCase();
-        skycons.play();
-        return skycons.set(iconID, Skycons[currentIcon])
-    }
-
 });
