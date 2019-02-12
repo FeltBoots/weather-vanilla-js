@@ -1,7 +1,10 @@
 'use strict';
 window.addEventListener('load', () => {
-    
-    class Utils {
+    const container = document.querySelector('.weather-js');
+    if (!container)
+        return;
+
+    class Utills {
         static appendNodes(parent, ...childs) {
             childs.forEach(child => {
                 parent.appendChild(child);
@@ -11,24 +14,33 @@ window.addEventListener('load', () => {
     
     class Card {
 	
-        constructor(paren) {
-            createCardNode(parent);
+        constructor(parent) {
+            this.createCardNode(parent);
         }
         
         createCardNode(parent) {
             let degreeSection = document.createElement('div');
             degreeSection.classList.add('degree-section');
             
-            this.tempDay = document.createElement('h2');
-            this.tempDay.classList.add('temperature-degree-day');
+            this.tempDayNode = document.createElement('h2');
+            this.tempDayNode.classList.add('temperature-degree-day');
     
-            this.tempNight = document.createElement('h2');
-            this.tempNight.classList.add('temperature-degree-night');
+            this.tempNightNode = document.createElement('h2');
+            this.tempNightNode.classList.add('temperature-degree-night');
             
             let span = document.createElement('span');
             
-            Utills.appendNodes(degreeSection, this.tempDay, this.tempNight, span);
+            Utills.appendNodes(degreeSection, this.tempDayNode, this.tempNightNode, span);
             Utills.appendNodes(parent, degreeSection);
+        }
+
+        static create(parent, count) {
+            const tempSection = document.createElement('div');
+            tempSection.classList.add('temperature-section');
+            const week = [];
+            for (let i = 0; i < count; i++) 
+                week.push(new Card(tempSection));
+            Utills.appendNodes(parent, tempSection);
         }
         
         get tempDay() {}
@@ -44,15 +56,15 @@ window.addEventListener('load', () => {
     class TodayDescription {
         
         constructor(parentNode) {        
-            createNode(parentNode);
+            this.createDescriptionNode(parentNode);
         }
         
         createDescriptionNode(parent) {
             let section = document.createElement('div');
             section.classList.add('location-section');
             
-            this.location = document.createElement('h1');
-            this.location.classList.add('location-timezone');
+            this.locationNode = document.createElement('h1');
+            this.locationNode.classList.add('location-timezone');
             
             this.iconCanvas = document.createElement('canvas');
             this.iconCanvas.setAttribute("class", "icon");
@@ -60,35 +72,24 @@ window.addEventListener('load', () => {
             this.iconCanvas.setAttribute("width", "128"); 
             this.iconCanvas.setAttribute("height", "128"); 
             
-            Utils.appendNodes(section, this.location, this.iconCanvas);
+            Utills.appendNodes(section, this.locationNode, this.iconCanvas);
+            Utills.appendNodes(parent, section);
+        }
+
+        static create() {
+            return new TodayDescription(container);
         }
         
         get location() {
-            return this.location.textContent;
+            return this.locationNode.textContent;
         }
            
         set location(value) {
-            this.location.textContent = value;
+            this.locationNode.textContent = value;
         }
         
     }
-
-    const container = document.querySelector('.weather-js');
-    if (!container)
-        return;
     
-    let long;
-    let lat;
-
-    let temperatureDescription = document.querySelector('.temperature-description');
-    let temperatureDegreeDay = document.querySelector('.temperature-degree-day');
-    let temperatureDegreeNight = document.querySelector('.temperature-degree-night');
-    let locationTimezone = document.querySelector('.location-timezone');
-    let temperatureSection = document.querySelector('.temperature-section');
-    const temperatureSpan = document.querySelector('.temperature-section span');
-
-    let days = [];
-
     class Day {
 
         constructor(data, timezone) {
@@ -114,6 +115,24 @@ window.addEventListener('load', () => {
         }
 
     }
+    
+    const description = TodayDescription.create(container);
+    const week = Card.create(container, 8);
+    console.log(week);
+
+    const location = {
+        long : 0,
+        lat : 0,
+    }
+
+    let days = [];
+
+    let temperatureDescription = document.querySelector('.temperature-description');
+    let temperatureDegreeDay = document.querySelector('.temperature-degree-day');
+    let temperatureDegreeNight = document.querySelector('.temperature-degree-night');
+    let locationTimezone = document.querySelector('.location-timezone');
+    let temperatureSection = document.querySelector('.temperature-section');
+    const temperatureSpan = document.querySelector('.temperature-section span');
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
