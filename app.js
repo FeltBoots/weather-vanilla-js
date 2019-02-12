@@ -30,8 +30,9 @@ window.addEventListener('load', () => {
     
     class Card {
 	
-        constructor(parent) {
-            this.createCardNode(parent);
+        constructor(parent, create=true) {
+            if (create)
+                this.createCardNode(parent);
         }
         
         createCardNode(parent) {
@@ -99,13 +100,14 @@ window.addEventListener('load', () => {
     
     }
     
-    class TodayDescription {
+    class TodayDescription extends Card {
         
         constructor(parentNode) {        
-            this.createDescriptionNode(parentNode);
+            super(null, false);
+            this.createCardNode(parentNode);
         }
         
-        createDescriptionNode(parent) {
+        createCardNode(parent) {
             let section = document.createElement('div');
             section.classList.add('location-section');
             
@@ -130,14 +132,6 @@ window.addEventListener('load', () => {
            
         set location(value) {
             this.locationNode.textContent = value;
-        }
-
-        get dayName() {
-            return this.dayNode.textContent;
-        }
-
-        set dayName(value) {
-            this.dayNode.textContent = value;
         }
         
     }
@@ -244,7 +238,6 @@ window.addEventListener('load', () => {
                 .then(data => {
                     console.log(data);
                     manager.fillContent(data);
-                    console.log(data);
                 })
         });    
     }
