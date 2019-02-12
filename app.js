@@ -19,6 +19,9 @@ window.addEventListener('load', () => {
         }
         
         createCardNode(parent) {
+            let row = document.createElement('div');
+            row.classList.add('row');
+            
             let degreeSection = document.createElement('div');
             degreeSection.classList.add('degree-section');
             
@@ -29,9 +32,14 @@ window.addEventListener('load', () => {
             this.tempNightNode.classList.add('temperature-degree-night');
             
             let span = document.createElement('span');
+
+            this.tempDescriptionNode = document.createElement('div');
+            this.tempDescriptionNode.classList.add('temperature-description');
             
             Utills.appendNodes(degreeSection, this.tempDayNode, this.tempNightNode, span);
-            Utills.appendNodes(parent, degreeSection);
+            Utills.appendNodes(row, degreeSection);
+            Utills.appendNodes(row, this.tempDescriptionNode);
+            Utills.appendNodes(parent, row);
         }
 
         static create(parent, count) {
@@ -100,10 +108,11 @@ window.addEventListener('load', () => {
         }
 
         static createDays(dailyData, timezone) {
-            days = [];
+            const days = [];
             dailyData.forEach(element => {
                 days.push(new Day(element, timezone));
             });
+            return days;
         }
 
         getFullDay(time, zone) {
@@ -115,17 +124,32 @@ window.addEventListener('load', () => {
         }
 
     }
-    
-    const description = TodayDescription.create(container);
-    const week = Card.create(container, 8);
-    console.log(week);
+    class Manager {
+        
+        constructor() {
+            this.description = TodayDescription.create(container);
+            this.week = Card.create(container, 8);
+            this.location = {
+                long : 0,
+                lat : 0,
+            }
+            this.days = [];
+        }
 
-    const location = {
-        long : 0,
-        lat : 0,
+        fillToday(data) {
+
+        }
+
+        fillWeek(data) {
+            
+        }
+
+        fillContent(data) {
+
+        }
     }
 
-    let days = [];
+    const manager = new Manager();
 
     let temperatureDescription = document.querySelector('.temperature-description');
     let temperatureDegreeDay = document.querySelector('.temperature-degree-day');
@@ -136,8 +160,8 @@ window.addEventListener('load', () => {
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
-            long = position.coords.longitude;
-            lat = position.coords.latitude;
+            let long = position.coords.longitude;
+            let lat = position.coords.latitude;
 
             const proxy = 'https://cors-anywhere.herokuapp.com/';
             const api = `${proxy}https://api.darksky.net/forecast/30babca7ccb92efe1f4309d7f1a58a79/${lat},${long}`;
@@ -147,12 +171,14 @@ window.addEventListener('load', () => {
                     return response.json();
                 })
                 .then(data => {
+                    manager.fillContent(data);
+                    
                     console.log(data);
                     
                     const { temperature, summary, icon } = data.currently;
                     const dailyData  = data.daily.data;
 
-                    Day.createDays(dailyData, data.timezone);
+                    // Day.createDays(dailyData, data.timezone);
                     
                     temperatureDegreeDay.textContent = temperature;
                     temperatureDegreeNight.textContent = temperature;
