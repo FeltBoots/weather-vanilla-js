@@ -14,6 +14,7 @@
     box-sizing: border-box;
     outline: none;
     border: none;
+    font-size: 20px;
 }
 
 body {
@@ -29,10 +30,13 @@ body {
 
 /* ---------- LOCATION --------- */
 
-.location-section,
-.temperature-section {
+.location-section {
     height: 30vh;
     width: 50%;
+}
+
+.location-section,
+.temperature-section {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -41,7 +45,9 @@ body {
 /* ---------- TEMPERATURE --------- */
 
 .temperature-section {
-    flex-direction: column;
+    flex-direction: row;
+    width: 90%;
+    height: 30vh;
 }
 
 .degree-section {
@@ -51,11 +57,21 @@ body {
     flex-direction: column;
 }
 
-.degree-section span {
-    margin: 10px;
-    font-size: 30px;
+.degree-section h2 {
+    font-size: 120%;
 }
 
-.degree-section h2 {
-    font-size: 40px;
+.temperature-degree-day::after,
+.temperature-degree-night::after {
+    content: "\00b0";
+}
+
+.temperature-description {
+    margin-top: 20%;
+    text-align: center;
+}
+
+.row {
+    width: 10%;
+    border: 2px solid black;
 }
