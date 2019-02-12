@@ -146,7 +146,9 @@ window.addEventListener('load', () => {
             this.days = [];
         }
 
-        fillToday(data) {
+        fillToday(data, timezone) {
+            const today = this.description;
+            today.location = timezone;
         }
 
         fillWeek(data) {
@@ -173,12 +175,17 @@ window.addEventListener('load', () => {
         }
 
         fillContent(data) {
-            this.fillToday(data.currently);
+            this.fillToday(data.currently, data.timezone);
             
             let weekData = data.daily.data;
             this.days = Day.createDays(weekData, data.timezone);
             
             this.fillWeek(weekData);
+        }
+
+        setLocation(long, lat) {
+            location.long = long;
+            location.lat = lat;
         }
     }
 
@@ -188,6 +195,7 @@ window.addEventListener('load', () => {
         navigator.geolocation.getCurrentPosition(position => {
             let long = position.coords.longitude;
             let lat = position.coords.latitude;
+            manager.setLocation(long, lat);
 
             const proxy = 'https://cors-anywhere.herokuapp.com/';
             const api = `${proxy}https://api.darksky.net/forecast/30babca7ccb92efe1f4309d7f1a58a79/${lat},${long}`;
