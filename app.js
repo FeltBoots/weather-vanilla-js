@@ -22,8 +22,8 @@ window.addEventListener('load', () => {
             let row = document.createElement('div');
             row.classList.add('row');
             
-            let degreeSection = document.createElement('div');
-            degreeSection.classList.add('degree-section');
+            this.degreeSectionNode = document.createElement('div');
+            this.degreeSectionNode.classList.add('degree-section');
             
             this.tempDayNode = document.createElement('h2');
             this.tempDayNode.classList.add('temperature-degree-day');
@@ -31,13 +31,14 @@ window.addEventListener('load', () => {
             this.tempNightNode = document.createElement('h2');
             this.tempNightNode.classList.add('temperature-degree-night');
             
-            let span = document.createElement('span');
+            this.spanNode = document.createElement('span');
+            this.spanNode.textContent = 'F'; // Default value
 
             this.tempDescriptionNode = document.createElement('div');
             this.tempDescriptionNode.classList.add('temperature-description');
             
-            Utills.appendNodes(degreeSection, this.tempDayNode, this.tempNightNode, span);
-            Utills.appendNodes(row, degreeSection);
+            Utills.appendNodes(this.degreeSectionNode, this.tempDayNode, this.tempNightNode, this.spanNode);
+            Utills.appendNodes(row, this.degreeSectionNode);
             Utills.appendNodes(row, this.tempDescriptionNode);
             Utills.appendNodes(parent, row);
         }
@@ -49,15 +50,24 @@ window.addEventListener('load', () => {
             for (let i = 0; i < count; i++) 
                 week.push(new Card(tempSection));
             Utills.appendNodes(parent, tempSection);
+            return week;
         }
         
-        get tempDay() {}
+        get tempDay() {
+            return this.tempDayNode.textContent;
+        }
     
-        set tempDay(value) {}
+        set tempDay(value) {
+            this.tempDayNode.textContent = Math.round(value);
+        }
         
-        get tempNight() {}
+        get tempNight() {
+            return this.tempNightNode.textContent;
+        }
         
-        set tempNigth(value) {}
+        set tempNight(value) {
+            this.tempNightNode.textContent = Math.round(value);
+        }
     
     }
     
@@ -137,26 +147,42 @@ window.addEventListener('load', () => {
         }
 
         fillToday(data) {
-
         }
 
         fillWeek(data) {
-            
+            data.forEach((dayData, i) => {
+                const {temperatureMax, temperatureMin} = dayData;
+                const day = this.week[i];
+                
+                day.tempDay = temperatureMax;
+                day.tempNight = temperatureMin;
+
+                day.degreeSectionNode.addEventListener('click', () => {
+                    if (day.spanNode.textContent == 'F') { // Change to smt more interesting
+                        day.spanNode.textContent = 'C';
+                        const celsius = value => (value - 32) * (5 / 9);
+                        day.tempDay = celsius(day.tempDay);
+                        day.tempNight = celsius(day.tempNight);
+                    } else {
+                        day.spanNode.textContent = 'F';
+                        day.tempDay = temperatureMax;
+                        day.tempNight = temperatureMin;
+                    }
+                });   
+            });
         }
 
         fillContent(data) {
-
+            this.fillToday(data.currently);
+            
+            let weekData = data.daily.data;
+            this.days = Day.createDays(weekData, data.timezone);
+            
+            this.fillWeek(weekData);
         }
     }
 
     const manager = new Manager();
-
-    let temperatureDescription = document.querySelector('.temperature-description');
-    let temperatureDegreeDay = document.querySelector('.temperature-degree-day');
-    let temperatureDegreeNight = document.querySelector('.temperature-degree-night');
-    let locationTimezone = document.querySelector('.location-timezone');
-    let temperatureSection = document.querySelector('.temperature-section');
-    const temperatureSpan = document.querySelector('.temperature-section span');
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
@@ -172,33 +198,7 @@ window.addEventListener('load', () => {
                 })
                 .then(data => {
                     manager.fillContent(data);
-                    
                     console.log(data);
-                    
-                    const { temperature, summary, icon } = data.currently;
-                    const dailyData  = data.daily.data;
-
-                    // Day.createDays(dailyData, data.timezone);
-                    
-                    temperatureDegreeDay.textContent = temperature;
-                    temperatureDegreeNight.textContent = temperature;
-                    temperatureDescription.textContent = summary; 
-                    locationTimezone.textContent = data.timezone;
-                    
-                    setIcon(icon, document.querySelector('.icon'));
-                    
-                    let celsius = (temperature - 32) * (5 / 9);
-                    
-                    temperatureSection.addEventListener('click', () => {
-                        if (temperatureSpan.textContent == 'F') {
-                            temperatureSpan.textContent = 'C';
-                            temperatureDegreeDay.textContent = Math.floor(celsius);
-                        } else {
-                            temperatureSpan.textContent = 'F';
-                            temperatureDegreeDay.textContent = temperature;
-                            
-                        }
-                    });
                 })
         });    
     }
