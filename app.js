@@ -1,5 +1,82 @@
 'use strict';
 window.addEventListener('load', () => {
+    
+    class Utils {
+        static appendNodes(parent, ...childs) {
+            childs.forEach(child => {
+                parent.appendChild(child);
+            });
+        }
+    }
+    
+    class Card {
+	
+        constructor(paren) {
+            createCardNode(parent);
+        }
+        
+        createCardNode(parent) {
+            let degreeSection = document.createElement('div');
+            degreeSection.classList.add('degree-section');
+            
+            this.tempDay = document.createElement('h2');
+            this.tempDay.classList.add('temperature-degree-day');
+    
+            this.tempNight = document.createElement('h2');
+            this.tempNight.classList.add('temperature-degree-night');
+            
+            let span = document.createElement('span');
+            
+            Utills.appendNodes(degreeSection, this.tempDay, this.tempNight, span);
+            Utills.appendNodes(parent, degreeSection);
+        }
+        
+        get tempDay() {}
+    
+        set tempDay(value) {}
+        
+        get tempNight() {}
+        
+        set tempNigth(value) {}
+    
+    }
+    
+    class TodayDescription {
+        
+        constructor(parentNode) {        
+            createNode(parentNode);
+        }
+        
+        createDescriptionNode(parent) {
+            let section = document.createElement('div');
+            section.classList.add('location-section');
+            
+            this.location = document.createElement('h1');
+            this.location.classList.add('location-timezone');
+            
+            this.iconCanvas = document.createElement('canvas');
+            this.iconCanvas.setAttribute("class", "icon");
+            this.iconCanvas.setAttribute("id", "icon1"); // change it
+            this.iconCanvas.setAttribute("width", "128"); 
+            this.iconCanvas.setAttribute("height", "128"); 
+            
+            Utils.appendNodes(section, this.location, this.iconCanvas);
+        }
+        
+        get location() {
+            return this.location.textContent;
+        }
+           
+        set location(value) {
+            this.location.textContent = value;
+        }
+        
+    }
+
+    const container = document.querySelector('.weather-js');
+    if (!container)
+        return;
+    
     let long;
     let lat;
 
