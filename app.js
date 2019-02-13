@@ -284,9 +284,45 @@ window.addEventListener('load', () => {
         }
 
     }
+
+    class Input {
+        
+        constructor(parent) {
+            this.createCardNode(parent);
+        }
+
+        createCardNode(parent) {
+            /* input section*/
+            let inputSectionNode = document.createElement('div');
+            inputSectionNode.classList.add('input-section');
+
+            this.formNode = document.createElement('form');
+            this.formNode.classList.add('flex-form');
+
+            this.inputSearchNode = document.createElement('input');
+            this.inputSearchNode.setAttribute('type', 'search');
+            this.inputSearchNode.setAttribute('placeholder', 'Enter the name of the city');
+            
+            this.inputSubmitNode = document.createElement('input');
+            this.inputSubmitNode.setAttribute('type', 'submit');
+            this.inputSubmitNode.setAttribute('value', 'Search');
+
+            Utills.appendNodes(this.formNode,
+                this.inputSearchNode,
+                this.inputSubmitNode,
+            )
+            Utills.appendNodes(inputSectionNode, this.formNode)
+            Utills.appendNodes(parent, inputSectionNode);
+        }         
+        
+        static create() {
+            return new Input(container);
+        }
+    }
     class Manager {
         
         constructor() {
+            this.input = Input.create(container);
             this.description = TodayDescription.create(container);
             this.week = Card.create(container, 8);
             this.location = {
