@@ -26,6 +26,19 @@ window.addEventListener('load', () => {
             skycons.play();
             skycons.set(iconID, Skycons[currentIcon]);
         }
+
+        static getPercentage(value) {
+            return Math.round(value * 100)
+        }
+
+        static getTimeStamp(time, zone) {
+            return moment(time * 1000).tz(zone).format('ddd');
+        }
+
+        static getDate(time, zone) {
+            return moment(time * 1000).tz(zone).format('dddd, MMMM Do');
+        }
+
     }
     
     class Card {
@@ -115,23 +128,85 @@ window.addEventListener('load', () => {
             this.locationNode.classList.add('location-timezone');
 
             this.dayNode = document.createElement('h2');
-            
+
+            let dayDetails = document.createElement('ul');
+
+            this.precipitationNode = document.createElement('li');
+            this.humidityNode = document.createElement('li');
+            this.windNode = document.createElement('li');
+            this.cloudCoverageNode = document.createElement('li');
+            this.sunriseNode = document.createElement('li');
+            this.dewPointNode = document.createElement('li');
+            this.visibilityNode = document.createElement('li');
+            this.sunsetNode = document.createElement('li');
+  
+            Utills.appendNodes(dayDetails, 
+                this.precipitationNode,
+                this.sunriseNode,
+                this.humidityNode,
+                this.windNode,
+                this.sunsetNode,
+                this.cloudCoverageNode,
+                this.dewPointNode,
+                this.visibilityNode,
+            )
             Utills.appendNodes(section, this.locationNode);
             Utills.attachIconNode.call(this, section, 128, 128);
             Utills.appendNodes(section, this.dayNode);
+            Utills.appendNodes(section, dayDetails);
             Utills.appendNodes(parent, section);
         }
 
         static create() {
             return new TodayDescription(container);
         }
-        
-        get location() {
+
+        get cityLocation() {
             return this.locationNode.textContent;
         }
            
-        set location(value) {
+        set cityLocation(value) {
             this.locationNode.textContent = value;
+        }
+
+        set precipitation(value) {
+            this.precipitationNode.innerHTML = 
+                `Precipitation: <span>${Utills.getPercentage(value)}%</span>`;
+        }
+
+        set humidity(value) {
+            this.humidityNode.innerHTML = 
+                `Humidity: <span>${Utills.getPercentage(value)}%</span>`;
+        }
+
+        set wind(value) {
+            this.windNode.innerHTML =
+                `Wind: <span>${Utills.getPercentage(value)} mph</span>`;
+        }
+
+        set sunrise(sunriseTime) {
+            const time = Utills.getTimeStamp(sunriseTime * 1000, this.cityLocation);
+            this.sunsetNode.innerHTML = `Sunrise:: <span>${time}</span>`;
+        }
+
+        set sunset(sunetTime) {
+            const time = Utills.getTimeStamp(sunetTime * 1000, this.cityLocation);
+            this.sunriseNode.innerHTML = `Sunrise:: <span>${time}</span>`;
+        }
+
+        set cloudCoverage(value) {
+            this.cloudCoverageNode.innerHTML = 
+                `Cloud Coverage: <span>${Utills.getPercentage(value)}%</span>`;
+        }
+
+        set dewPoint(value) {
+            this.cloudCoverageNode.innerHTML = 
+                `Dew Point: <span>${Math.round(value)}</span>`;
+        }
+
+        set visibility(value) {
+            this.visibilityNode.innerHTML = 
+                `Visibility: <span>${Math.round(value)} miles</span>`;
         }
         
     }
@@ -152,11 +227,11 @@ window.addEventListener('load', () => {
         }
 
         get fullDay() {
-            return moment(this.time * 1000).tz(this.zone).format('dddd, MMMM Do');
+            return Utills.getDate(this.time, this.zone);
         }
 
         get weekDay() {
-            return moment(this.time * 1000).tz(this.zone).format('ddd');
+            return Utills.getTimeStamp(this.time, this.zone);
         }
 
     }
@@ -174,8 +249,17 @@ window.addEventListener('load', () => {
 
         fillToday(data, timezone) {
             const today = this.description;
-            today.location = timezone;
+            today.cityLocation = timezone;
             today.dayName = this.days[0].fullDay;
+
+            today.precipitation = data.precipProbability;
+            today.sunrise = data.sunriseTime;
+            today.humidity = data.visibility;
+            today.wind = data.windSpeed;
+            today.sunset = data.sunsetTime;
+            today.cloudCoverage = data.cloudCover;
+            today.dewPoint = data.dewPoint;
+            today.visibility = data.visibility;
             
             const icon = data.icon;
             Utills.setIcon(icon, today.iconCanvas);
@@ -210,7 +294,7 @@ window.addEventListener('load', () => {
         fillContent(data) {
             let weekData = data.daily.data;
             this.days = Day.createDays(weekData, data.timezone);
-            this.fillToday(data.currently, data.timezone);
+            this.fillToday(weekData[0], data.timezone);
             this.fillWeek(weekData);
         }
 
