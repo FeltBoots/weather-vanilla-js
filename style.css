@@ -13,7 +13,7 @@
     box-sizing: border-box;
     outline: none;
     border: none;
-    font-size: 23px;
+    font-size: 24px;
     font-weight: 300;
 }
 
@@ -32,19 +32,27 @@ body {
     display: flex;
     justify-content: space-around;
     flex-direction: column;
-    /* border: 1px solid black; */
-    width: 70%;
+    width: 80%;
     height: 80%;
 }
 
 /* skyicons */
 canvas {
     align-self: center;
-    width: 50%;
 }
 
 .location-section canvas {
-    width: 10%;
+    width: 128px;
+    height: 128px;
+}
+
+.row {
+    width: 12%;
+}
+
+.row canvas {
+    width: 64px;
+    height: 64px;
 }
 
 /* temperature */
@@ -236,6 +244,10 @@ span {
 
 /* Big tablet to 1200px (width smaller that the 1140px row) */
 @media only screen and (max-width: 1200px) {
+    .weather-js {
+        width: 90%;
+    }    
+    
     .day-description {
         width: 50%;
     }
@@ -250,13 +262,13 @@ span {
     * {
         font-size: 20px;
     }
-
-    .weather-js {
-        width: 90%;
-    }    
     
+    .weather-js {
+        width: 96%;
+    }
+
     .day-description {
-        width: 60%;
+        width: 50%;
     }
 
     .timezone-description {
@@ -268,10 +280,6 @@ span {
 @media only screen and (max-width: 767px) {
     * {
         font-size: 22px;
-    }
-
-    .weather-js {
-        width: 100%;
     }
 
     body {
