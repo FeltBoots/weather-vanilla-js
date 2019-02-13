@@ -72,8 +72,8 @@ window.addEventListener('load', () => {
             Utills.appendNodes(this.degreeSectionNode, this.tempDayNode, this.tempNightNode);
 
             /* temperature-description */
-            this.tempDescriptionNode = document.createElement('div');
-            this.tempDescriptionNode.classList.add('temperature-description'); // Change to h3
+            this.tempDescriptionNode = document.createElement('h2');
+            this.tempDescriptionNode.classList.add('temperature-description');
             
             Utills.attachIconNode.call(this, row, 64, 64);
             Utills.appendNodes(row, this.dayNode);
@@ -114,6 +114,10 @@ window.addEventListener('load', () => {
 
         set dayName(value) {
             this.dayNode.textContent = value;
+        }
+
+        set description(value) {
+            this.tempDescriptionNode.textContent = value;
         }
     
     }
@@ -245,7 +249,15 @@ window.addEventListener('load', () => {
             this.visibilityNode.innerHTML = 
                 `Visibility: <span>${Math.round(value)} miles</span>`;
         }
-        
+
+        set description(value) {
+            this.weatherDescription.textContent = value;
+        }
+
+        set temperature(value) {
+            this.dayTemperature.textContent =  Math.round(value);
+        }
+
     }
     
     class Day {
@@ -284,7 +296,7 @@ window.addEventListener('load', () => {
             this.days = [];
         }
 
-        fillToday(data, timezone) {
+        fillToday(data, timezone, current) {
             console.log(data);
             const today = this.description;
             today.cityLocation = timezone;
@@ -298,6 +310,21 @@ window.addEventListener('load', () => {
             today.cloudCoverage = data.cloudCover;
             today.dewPoint = data.dewPoint;
             today.visibility = data.visibility;
+
+            today.description = data.summary
+            today.temperature = current.temperature;
+            today.dayTemperature.addEventListener('click', () => {
+                const node = today.dayTemperature;
+                if (node.classList.contains('deg-far')) {
+                    node.classList.remove('deg-far');
+                    node.classList.add('deg-cel');
+                    today.temperature = (current.temperature - 32) * (5 / 9);
+                } else {
+                    node.classList.remove('deg-cel');
+                    node.classList.add('deg-far');
+                    today.temperature = current.temperature;
+                }
+            });
             
             const icon = data.icon;
             Utills.setIcon(icon, today.iconCanvas);
@@ -305,7 +332,7 @@ window.addEventListener('load', () => {
 
         fillWeek(data) {
             data.forEach((dayData, i) => {
-                const {temperatureMax, temperatureMin, icon} = dayData;
+                const {temperatureMax, temperatureMin, icon, summary} = dayData;
                 const cardDay = this.week[i];
                 cardDay.dayName = this.days[i].weekDay;
 
@@ -313,6 +340,7 @@ window.addEventListener('load', () => {
                 
                 cardDay.tempDay = temperatureMax;
                 cardDay.tempNight = temperatureMin;
+                cardDay.description = summary;
 
                 cardDay.degreeSectionNode.addEventListener('click', () => {
                     const node = cardDay.tempDayNode;
@@ -335,7 +363,7 @@ window.addEventListener('load', () => {
         fillContent(data) {
             let weekData = data.daily.data;
             this.days = Day.createDays(weekData, data.timezone);
-            this.fillToday(weekData[0], data.timezone);
+            this.fillToday(weekData[0], data.timezone, data.currently);
             this.fillWeek(weekData);
         }
 
