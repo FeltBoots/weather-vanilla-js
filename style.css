@@ -1,77 +1,302 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400');
 
-/*  
-    Green: #67b26f
-    Blue: #4ca2cd
-    Mid: #5aaa9d
+/*
+    wight      : #E6E8EA
+    light-blue : #b6dafd 
 */
 
 /* Basic setup */
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     outline: none;
     border: none;
-    font-size: 20px;
+    font-size: 23px;
+    font-weight: 300;
 }
 
 body {
+    color: #b6dafd;
+    font-family: Roboto;
+    background: linear-gradient(55deg, #0c9289 0%, #1cb1c2 51%, #26a0cc 60%);
+    height: 100vh;
     display: flex;
-    justify-content: center;
     flex-direction: column;
     align-items: center;
-    color: #e9e8e8;
-    font-family: Roboto;
-    background: linear-gradient(to bottom right, #67b26f, #4ca2cd);
-    height: 100vh;
+    justify-content: center;
 }
 
-/* ---------- LOCATION --------- */
-
-.location-section {
-    height: 30vh;
-    width: 50%;
-}
-
-.location-section,
-.temperature-section {
+.weather-js {
     display: flex;
     justify-content: space-around;
-    align-items: center;
-}
-
-/* ---------- TEMPERATURE --------- */
-
-.temperature-section {
-    flex-direction: row;
-    width: 90%;
-    height: 30vh;
-}
-
-.degree-section {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
     flex-direction: column;
+    /* border: 1px solid black; */
+    width: 70%;
+    height: 80%;
 }
 
-.degree-section h2 {
-    font-size: 120%;
+/* Reusable components */
+.deg-far {
+    color: #E6E8EA
 }
 
-.temperature-degree-day::after,
-.temperature-degree-night::after {
-    content: "\00b0";
+.deg-far::after {
+    content: "\00b0  F";
 }
 
-.temperature-description {
-    margin-top: 20%;
+.deg-cel::after {
+    content: "\00b0  C";
+}
+
+/* ---------- INPUT SECTION ---------- */
+
+.input-section {
+    align-self: center;
+    width: 90%;
+}
+
+.flex-form input[type="submit"] {
+    background-color: rgba(38, 50, 56, 0.8);
+    border: 1px solid rgba(38, 50, 56, 0.8);
+    color: #fff;
+    padding: 0 30px;
+    cursor: pointer;
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    transition: all 0.2s;
+    border-top-right-radius: 80px;
+    border-bottom-right-radius: 80px;
+}
+
+.flex-form input[type="submit"]:hover {
+    background-color: rgba(0, 150, 136, 0.8);
+    border: 1px solid rgba(0, 150, 136, 0.8);;
+}
+
+.flex-form {
+    display: -webkit-box;
+    display: flex;
+    box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.3);
+    border-radius: 80px;
+}
+
+.flex-form > * {
+    border: 0;
+    padding: 0 0 0 10px;
+    background: #fff;
+    line-height: 50px;
+    font-size: 1rem;
+    outline: 0;
+    -webkit-appearance: none;
+}
+
+.from,
+input[type="search"] {
+    color: #577FA7;
+    border-top-left-radius: 80px;
+    border-bottom-left-radius: 80px;
+    background-color: #DCDFE1;
+}
+
+input[type="search"] {
+    flex-basis: 90%;
+}
+
+
+/* ---------- LOCATION SECTION ---------- */
+
+.location-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 40%;
+}
+
+/* timezone description */
+.timezone-description {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.timezone-description h1 {
+    font-size: 100%;
+    font-weight: 400;
+}
+
+.timezone-description h2 {
+    margin-top: 20px;
+    font-size: 70%;
+}
+
+.timezone-description h3 {
+    margin-top: 10px;
+    font-size: 300%;
+    align-self: center;
+}
+
+.timezone-description h4 {
+    font-size: 70%;
     text-align: center;
 }
 
+/* day description */
+.day-description {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 40%;
+}
+
+span { 
+    font-weight: 300; 
+}
+
+.desc-first li,
+.desc-first span,
+.desc-second li,
+.desc-second span {
+    font-size: 80%;
+    list-style: none;
+}
+
+.desc-first span,
+.desc-second span {
+    font-weight: 400;
+    color: #E6E8EA;
+}
+
+.desc-first,
+.desc-second {
+    display: flex;
+    flex-direction: column;
+    height: 80%;
+    width: 40%;
+    justify-content: space-between;
+}
+
+/* ---------- TEMPERATURE SECTION ---------- */
+
+.temperature-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 40%;
+}
+
 .row {
+    display: flex;
+    flex-direction: column;
     width: 10%;
-    border: 2px solid black;
+    text-align: center;
+    justify-content: space-around;
+}
+
+.week-day {
+    font-size: 90%;
+    font-weight: 400;
+}
+
+.degree-section {
+    cursor: pointer;
+}
+
+.temperature-degree-day,
+.temperature-degree-night {
+    font-size: 80%;
+}
+
+.temperature-description {
+    font-size: 60%;
+}
+
+/* ---------- MEDIA QUERIES ---------- */
+
+/* Big tablet to 1200px (width smaller that the 1140px row) */
+@media only screen and (max-width: 1200px) {
+    .day-description {
+        width: 50%;
+    }
+    
+    .row {
+        width: 12%;
+    }
+}
+
+/* Small tablet to big tablet: from 768px to 1023px */
+@media only screen and (max-width: 1023px) {
+    * {
+        font-size: 20px;
+    }
+
+    .weather-js {
+        width: 90%;
+    }    
+    
+    .day-description {
+        width: 60%;
+    }
+
+    .timezone-description {
+        justify-content: space-between;
+    }
+}
+
+/* Small phones to small tablets from 0px to 767px */
+@media only screen and (max-width: 767px) {
+    * {
+        font-size: 22px;
+    }
+
+    .weather-js {
+        width: 100%;
+    }
+
+    body {
+        height: 1000px;
+    }
+
+    .location-section {
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .timezone-description {
+        text-align: center;
+    }
+
+    .timezone-description h1 {
+        font-size: 150%;
+    }
+
+    .timezone-description h2 {
+        font-size: 90%;
+    }
+
+    .day-description {
+        justify-content: flex-end;   
+        align-items: center;
+        width: 100%;
+        margin-bottom: 40px;
+    }
+
+    .desc-first li,
+    .desc-first span,
+    .desc-second li,
+    .desc-second span {
+        padding-top: 10px;
+        list-style: none;
+    }
+
+    .temperature-section {
+        flex-wrap: wrap;
+    }
+
+    .row {
+        flex: 1 0 21%;
+    }
+
 }

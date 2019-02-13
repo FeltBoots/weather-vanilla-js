@@ -49,30 +49,31 @@ window.addEventListener('load', () => {
         }
         
         createCardNode(parent) {
+            /* row */
             let row = document.createElement('div');
             row.classList.add('row');
-            
-            this.degreeSectionNode = document.createElement('div');
-            this.degreeSectionNode.classList.add('degree-section');
-            
-            this.tempDayNode = document.createElement('h2');
-            this.tempDayNode.classList.add('temperature-degree-day');
-    
-            this.tempNightNode = document.createElement('h2');
-            this.tempNightNode.classList.add('temperature-degree-night');
-            
-            this.spanNode = document.createElement('span');
-            this.spanNode.textContent = 'F'; // Default value
-
-            this.tempDescriptionNode = document.createElement('div');
-            this.tempDescriptionNode.classList.add('temperature-description');
 
             this.dayNode = document.createElement('h2');
+            this.dayNode.classList.add('week-day');
+
+            /* degree-section */
+            let degreeSectionNode = document.createElement('div');
+            degreeSectionNode.classList.add('degree-section');
+            
+            this.tempDayNode = document.createElement('h2');
+            this.tempDayNode.classList.add('temperature-degree-day', 'deg-far');
+            this.tempNightNode = document.createElement('h2');
+            this.tempNightNode.classList.add('temperature-degree-night', 'deg-far');
+            
+            Utills.appendNodes(degreeSectionNode, this.tempDayNode, this.tempNightNode);
+
+            /* temperature-description */
+            this.tempDescriptionNode = document.createElement('div');
+            this.tempDescriptionNode.classList.add('temperature-description'); // Change to h3
             
             Utills.attachIconNode.call(this, row, 64, 64);
             Utills.appendNodes(row, this.dayNode);
-            Utills.appendNodes(this.degreeSectionNode, this.tempDayNode, this.tempNightNode, this.spanNode);
-            Utills.appendNodes(row, this.degreeSectionNode);
+            Utills.appendNodes(row, degreeSectionNode);
             Utills.appendNodes(row, this.tempDescriptionNode);
             Utills.appendNodes(parent, row);
         }
@@ -120,16 +121,37 @@ window.addEventListener('load', () => {
             this.createCardNode(parentNode);
         }
         
-        createCardNode(parent) {
-            let section = document.createElement('div');
-            section.classList.add('location-section');
+        createCardNode(parent) {            
+            /* timezone-description */
+            let timezoneDescription = document.createElement('div');
+            timezoneDescription.classList.add('timezone-description');
             
             this.locationNode = document.createElement('h1');
             this.locationNode.classList.add('location-timezone');
+            
+            this.dayNode = document.createElement('h2');  
 
-            this.dayNode = document.createElement('h2');
+            this.dayTemperature = document.createElement('h3');
+            this.dayTemperature.classList.add('deg-far');
 
-            let dayDetails = document.createElement('ul');
+            this.weatherDescription = document.createElement('h4');
+
+            Utills.appendNodes(timezoneDescription,
+                this.locationNode,
+                this.dayNode,
+                this.dayTemperature,
+                this.weatherDescription,
+            )
+
+            /* day-description */
+            let dayDescription = document.createElement('div');
+            dayDescription.classList.add('day-description');
+
+            let descFirst = document.createElement('ul');
+            descFirst.classList.add('desc-first');
+            
+            let descSecond = document.createElement('ul');
+            descSecond.classList.add('desc-second');
 
             this.precipitationNode = document.createElement('li');
             this.humidityNode = document.createElement('li');
@@ -139,22 +161,34 @@ window.addEventListener('load', () => {
             this.dewPointNode = document.createElement('li');
             this.visibilityNode = document.createElement('li');
             this.sunsetNode = document.createElement('li');
-  
-            Utills.appendNodes(dayDetails, 
-                this.precipitationNode,
+
+            Utills.appendNodes(descFirst,
                 this.sunriseNode,
+                this.precipitationNode,
                 this.humidityNode,
                 this.windNode,
+            )
+
+            Utills.appendNodes(descSecond,
                 this.sunsetNode,
                 this.cloudCoverageNode,
                 this.dewPointNode,
-                this.visibilityNode,
+                this.visibilityNode,       
             )
-            Utills.appendNodes(section, this.locationNode);
-            Utills.attachIconNode.call(this, section, 128, 128);
-            Utills.appendNodes(section, this.dayNode);
-            Utills.appendNodes(section, dayDetails);
-            Utills.appendNodes(parent, section);
+
+            Utills.appendNodes(dayDescription,
+                descFirst,
+                descSecond,
+            )
+
+            /* location section */
+            let locationSection = document.createElement('div');
+            locationSection.classList.add('location-section');
+
+            Utills.appendNodes(locationSection, timezoneDescription);
+            Utills.attachIconNode.call(this, locationSection, 128, 128);
+            Utills.appendNodes(locationSection, dayDescription);
+            Utills.appendNodes(parent, locationSection);            
         }
 
         static create() {
