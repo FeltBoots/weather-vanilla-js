@@ -57,15 +57,15 @@ window.addEventListener('load', () => {
             this.dayNode.classList.add('week-day');
 
             /* degree-section */
-            let degreeSectionNode = document.createElement('div');
-            degreeSectionNode.classList.add('degree-section');
+            this.degreeSectionNode = document.createElement('div');
+            this.degreeSectionNode.classList.add('degree-section');
             
             this.tempDayNode = document.createElement('h2');
             this.tempDayNode.classList.add('temperature-degree-day', 'deg-far');
             this.tempNightNode = document.createElement('h2');
             this.tempNightNode.classList.add('temperature-degree-night', 'deg-far');
             
-            Utills.appendNodes(degreeSectionNode, this.tempDayNode, this.tempNightNode);
+            Utills.appendNodes(this.degreeSectionNode, this.tempDayNode, this.tempNightNode);
 
             /* temperature-description */
             this.tempDescriptionNode = document.createElement('div');
@@ -73,7 +73,7 @@ window.addEventListener('load', () => {
             
             Utills.attachIconNode.call(this, row, 64, 64);
             Utills.appendNodes(row, this.dayNode);
-            Utills.appendNodes(row, degreeSectionNode);
+            Utills.appendNodes(row, this.degreeSectionNode);
             Utills.appendNodes(row, this.tempDescriptionNode);
             Utills.appendNodes(parent, row);
         }
@@ -311,13 +311,16 @@ window.addEventListener('load', () => {
                 cardDay.tempNight = temperatureMin;
 
                 cardDay.degreeSectionNode.addEventListener('click', () => {
-                    if (cardDay.spanNode.textContent == 'F') { // Change to smt more interesting
-                        cardDay.spanNode.textContent = 'C';
+                    const node = cardDay.tempDayNode;
+                    if (node.classList.contains('deg-far')) {
+                        node.classList.remove('deg-far');
+                        node.classList.add('deg-cel');
                         const celsius = value => (value - 32) * (5 / 9);
                         cardDay.tempDay = celsius(cardDay.tempDay);
                         cardDay.tempNight = celsius(cardDay.tempNight);
                     } else {
-                        cardDay.spanNode.textContent = 'F';
+                        node.classList.remove('deg-cel');
+                        node.classList.add('deg-far');
                         cardDay.tempDay = temperatureMax;
                         cardDay.tempNight = temperatureMin;
                     }

@@ -3,6 +3,7 @@
 /*
     wight      : #E6E8EA
     light-blue : #b6dafd 
+    input      : #263238cc 
 */
 
 /* Basic setup */
@@ -36,10 +37,27 @@ body {
     height: 80%;
 }
 
-/* Reusable components */
-.deg-far {
-    color: #E6E8EA
+/* skyicons */
+canvas {
+    align-self: center;
+    width: 50%;
 }
+
+.location-section canvas {
+    width: 10%;
+}
+
+/* temperature */
+.deg-far,
+.deg-cel {
+    color: #E6E8EA;
+}
+
+.temperature-degree-night {
+    color: #263238cc;
+}
+
+/* Reusable components */
 
 .deg-far::after {
     content: "\00b0  F";
@@ -57,8 +75,8 @@ body {
 }
 
 .flex-form input[type="submit"] {
-    background-color: rgba(38, 50, 56, 0.8);
-    border: 1px solid rgba(38, 50, 56, 0.8);
+    background-color: #263238cc;
+    border: 1px solid #263238cc;
     color: #fff;
     padding: 0 30px;
     cursor: pointer;
