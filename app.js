@@ -28,11 +28,15 @@ window.addEventListener('load', () => {
         }
 
         static getPercentage(value) {
-            return Math.round(value * 100)
+            return Math.round(value * 100);
+        }
+
+        static getWeekDay(time, zone) {
+            return moment(time * 1000).tz(zone).format('ddd');
         }
 
         static getTimeStamp(time, zone) {
-            return moment(time * 1000).tz(zone).format('ddd');
+            return moment(time).tz(zone).format('h:mm A');
         }
 
         static getDate(time, zone) {
@@ -214,28 +218,27 @@ window.addEventListener('load', () => {
         }
 
         set wind(value) {
-            this.windNode.innerHTML =
-                `Wind: <span>${Utills.getPercentage(value)} mph</span>`;
+            this.windNode.innerHTML = `Wind: <span>${value} mph</span>`;
         }
 
         set sunrise(sunriseTime) {
             const time = Utills.getTimeStamp(sunriseTime * 1000, this.cityLocation);
-            this.sunsetNode.innerHTML = `Sunrise:: <span>${time}</span>`;
+            this.sunsetNode.innerHTML = `Sunset: <span>${time}</span>`;
         }
 
         set sunset(sunetTime) {
             const time = Utills.getTimeStamp(sunetTime * 1000, this.cityLocation);
-            this.sunriseNode.innerHTML = `Sunrise:: <span>${time}</span>`;
+            this.sunriseNode.innerHTML = `Sunrise: <span>${time}</span>`;
         }
 
         set cloudCoverage(value) {
-            this.cloudCoverageNode.innerHTML = 
+            this.dewPointNode.innerHTML = 
                 `Cloud Coverage: <span>${Utills.getPercentage(value)}%</span>`;
         }
 
         set dewPoint(value) {
             this.cloudCoverageNode.innerHTML = 
-                `Dew Point: <span>${Math.round(value)}</span>`;
+                `Dew Point: <span>${Math.round(value)}° F</span>`;
         }
 
         set visibility(value) {
@@ -265,7 +268,7 @@ window.addEventListener('load', () => {
         }
 
         get weekDay() {
-            return Utills.getTimeStamp(this.time, this.zone);
+            return Utills.getWeekDay(this.time, this.zone);
         }
 
     }
@@ -282,13 +285,14 @@ window.addEventListener('load', () => {
         }
 
         fillToday(data, timezone) {
+            console.log(data);
             const today = this.description;
             today.cityLocation = timezone;
             today.dayName = this.days[0].fullDay;
 
             today.precipitation = data.precipProbability;
             today.sunrise = data.sunriseTime;
-            today.humidity = data.visibility;
+            today.humidity = data.humidity;
             today.wind = data.windSpeed;
             today.sunset = data.sunsetTime;
             today.cloudCoverage = data.cloudCover;
