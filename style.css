@@ -225,6 +225,7 @@ span {
 .week-day {
     font-size: 90%;
     font-weight: 400;
+    cursor: pointer;
 }
 
 .degree-section {
