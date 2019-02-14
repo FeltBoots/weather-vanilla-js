@@ -506,6 +506,7 @@ window.addEventListener('load', () => {
         constructor() {
             /* generate DOM structure and attach events */
             this.manager = new Manager();
+            this.createScrollTop();
 
             /* set api keys and proxy*/
             this.googleMapAPIKey = 'AIzaSyDoYhVFl3m0T8SLmWdFxHZDOLiw7nMvg_M';
@@ -622,6 +623,42 @@ window.addEventListener('load', () => {
                         });
                 });    
             }
+        }
+
+        createScrollTop() {
+            let scrollNode = document.createElement('div');
+            scrollNode.classList.add('scroll');
+
+            let arrowNode = document.createElement('a');
+            arrowNode.classList.add('arrow', 'arrow-up');
+            
+            Utills.appendNodes(scrollNode, arrowNode);
+            Utills.appendNodes(container, scrollNode);
+        
+            let intervalId = 0; 
+            const scrollStep = () => {
+                if (window.pageYOffset === 0) {
+                    clearInterval(intervalId);
+                    document.body.scrollTop = 0;
+                }
+                window.scroll(0, window.pageYOffset - 50);
+            }
+
+            arrowNode.addEventListener('click', () => {
+                intervalId = setInterval(scrollStep, 15.0);
+            })
+
+            const scrollFunction = () => {
+                if (document.body.scrollTop > 20 || document.documentElement.scrollTop)
+                    document.querySelector(".scroll").style.display = "block";
+                else
+                    document.querySelector(".scroll").style.display = "none";
+            }
+
+            window.onscroll = () => {
+                scrollFunction()
+            };
+
         }
 
         static create() {
