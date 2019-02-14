@@ -79,32 +79,20 @@ canvas {
 
 .input-section {
     align-self: center;
-    width: 90%;
+    width: 80%;
 }
 
-.input-container input[type="submit"] {
-    background-color: #263238cc;
-    border: 1px solid #263238cc;
-    color: #fff;
-    padding: 0 30px;
-    cursor: pointer;
-    -webkit-transition: all 0.2s;
-    -moz-transition: all 0.2s;
-    transition: all 0.2s;
-    border-top-right-radius: 80px;
-    border-bottom-right-radius: 80px;
-}
-
-.input-container input[type="submit"]:hover {
-    background-color: rgba(0, 150, 136, 0.8);
-    border: 1px solid rgba(0, 150, 136, 0.8);;
+.input-borders {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
 
 .input-container {
     display: -webkit-box;
     display: flex;
     box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.3);
-    border-radius: 80px;
 }
 
 .input-container > * {
@@ -117,16 +105,17 @@ canvas {
     -webkit-appearance: none;
 }
 
-.from,
 input[type="search"] {
     color: #577FA7;
-    border-top-left-radius: 80px;
-    border-bottom-left-radius: 80px;
     background-color: #DCDFE1;
 }
 
 input[type="search"] {
-    flex-basis: 90%;
+    flex-basis: 100%;
+}
+
+input::-webkit-search-cancel-button {
+    display: none;
 }
 
 /* google map autocomplite */

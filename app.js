@@ -346,13 +346,13 @@ window.addEventListener('load', () => {
             let inputSectionNode = document.createElement('div');
             inputSectionNode.classList.add('input-section');
 
-            this.inputContainerNode = document.createElement('form');
-            this.inputContainerNode.classList.add('input-container');
+            this.inputContainerNode = document.createElement('input-wrapper');
+            this.inputContainerNode.classList.add('input-container', 'input-borders');
 
             this.inputSearchNode = document.createElement('input');
             this.inputSearchNode.setAttribute('type', 'search');
             this.inputSearchNode.setAttribute('placeholder', 'Enter the name of the city');
-            this.inputSearchNode.classList.add('search-input');
+            this.inputSearchNode.classList.add('search-input', 'input-borders');
             
             this.inputSubmitNode = document.createElement('input');
             this.inputSubmitNode.setAttribute('type', 'submit');
@@ -360,7 +360,7 @@ window.addEventListener('load', () => {
 
             Utills.appendNodes(this.inputContainerNode,
                 this.inputSearchNode,
-                this.inputSubmitNode,
+                // this.inputSubmitNode,
             )
             Utills.appendNodes(inputSectionNode, this.inputContainerNode)
             Utills.appendNodes(parent, inputSectionNode);
