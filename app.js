@@ -301,7 +301,7 @@ window.addEventListener('load', () => {
         }
 
         set wind(value) {
-            this.windNode.innerHTML = `Wind: <span>${value} kph</span>`;
+            this.windNode.innerHTML = `Wind: <span>${value} mph</span>`;
         }
 
         set sunrise(sunriseTime) {
@@ -426,6 +426,11 @@ window.addEventListener('load', () => {
             today.description = data.summary;
             today.temperature = Math.round(data.temperatureMax);
             today.temperatureFer = Math.round(data.temperatureMax);
+
+            if (today.dayTemperature.classList.contains('deg-cel')) {
+                today.dayTemperature.classList.remove('deg-cel');
+                today.dayTemperature.classList.add('deg-far');
+            }
             
             const icon = data.icon;
             Utills.setIcon(icon, today.iconCanvas);
