@@ -342,10 +342,6 @@ window.addEventListener('load', () => {
             this.input = Input.create(container);
             this.description = TodayDescription.create(container);
             this.week = Card.create(container, 8);
-            this.location = {
-                long : 0,
-                lat : 0,
-            }
             this.days = [];
             this.address = '';
         }
@@ -414,19 +410,6 @@ window.addEventListener('load', () => {
             this.fillWeek(weekData);
         }
 
-        setLocation(location) {
-            this.location.long = location.lng;
-            this.location.lat = location.lat;
-        }
-
-        get long() {
-            return this.location.long; 
-        }
-
-        get lat() {
-            return this.location.lat;
-        }
-
     }
 
     class Connector {
@@ -441,13 +424,15 @@ window.addEventListener('load', () => {
             this.proxy = 'https://cors-anywhere.herokuapp.com/';
             
             /* init input autocomplite */
-            this.initMap();
+            this.initInputAutocomplite();
+            
+            /* request current location */
+            this.getCurrentWeather();
         }
 
         updateApiDarkSky(value) {
-            this.manager.setLocation(value);
             this.apiDarkSky = 
-                `${this.proxy}https://api.darksky.net/forecast/${this.darkSkyAPIKey}/${this.manager.lat},${this.manager.long}`
+                `${this.proxy}https://api.darksky.net/forecast/${this.darkSkyAPIKey}/${value.lat},${value.lng}`
         }
 
         updateApiGoogleMaps(value) {
@@ -476,11 +461,7 @@ window.addEventListener('load', () => {
                 });
         }   
 
-        updateAutocomplete(input) {
-            this.autocomplite = new google.maps.places.Autocomplete(input);
-        }
-
-        initMap() {
+        initInputAutocomplite() {
             const fillInAddress = () => {
                 console.log(this.autocomplite);
                 let place = this.autocomplite.getPlace();
@@ -498,6 +479,24 @@ window.addEventListener('load', () => {
             inputForm.addEventListener('submit', e => {
                 e.preventDefault();
             });
+        }
+
+        getCurrentWeather() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    let long = position.coords.longitude;
+                    let lat = position.coords.latitude;
+                    this.updateApiDarkSky({lat : lat, lng: long });
+                    fetch(this.apiDarkSky)
+                        .then(response => {
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log(data);
+                            this.manager.fillContent(data);
+                        })
+                });    
+            }
         }
 
         static create() {
