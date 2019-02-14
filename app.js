@@ -410,6 +410,10 @@ window.addEventListener('load', () => {
             this.fillWeek(weekData);
         }
 
+        updateCity(value) {
+            this.description.cityLocation = value;
+        }
+
     }
 
     class Connector {
@@ -440,6 +444,10 @@ window.addEventListener('load', () => {
                 `https://maps.googleapis.com/maps/api/geocode/json?address=${value}&key=${this.googleMapAPIKey}`;
         }
 
+        updateAddress(value) {
+            this.manager.updateCity(value);
+        }
+
         makeRequest() {
             fetch(this.apiGoogleMaps)
                 .then(response => {
@@ -449,6 +457,7 @@ window.addEventListener('load', () => {
                     console.log('data from google maps: \n');
                     console.log(data);
                     this.updateApiDarkSky(data.results[0].geometry.location);
+                    this.currentAddress = data.results[0].address_components[0].long_name;
                     return fetch(this.apiDarkSky);
                 })
                 .then(response => {
@@ -458,6 +467,7 @@ window.addEventListener('load', () => {
                     console.log('data from dark sky: \n');
                     console.log(data);
                     this.manager.fillContent(data);
+                    this.updateAddress(this.currentAddress);
                 });
         }   
 
