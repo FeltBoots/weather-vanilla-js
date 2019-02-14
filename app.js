@@ -238,7 +238,7 @@ window.addEventListener('load', () => {
         }
 
         set wind(value) {
-            this.windNode.innerHTML = `Wind: <span>${value} mph</span>`;
+            this.windNode.innerHTML = `Wind: <span>${value} kph</span>`;
         }
 
         set sunrise(sunriseTime) {
@@ -312,23 +312,23 @@ window.addEventListener('load', () => {
             let inputSectionNode = document.createElement('div');
             inputSectionNode.classList.add('input-section');
 
-            this.formNode = document.createElement('form');
-            this.formNode.classList.add('flex-form');
+            this.inputContainerNode = document.createElement('form');
+            this.inputContainerNode.classList.add('input-container');
 
             this.inputSearchNode = document.createElement('input');
             this.inputSearchNode.setAttribute('type', 'search');
             this.inputSearchNode.setAttribute('placeholder', 'Enter the name of the city');
-            this.inputSearchNode.classList.add('searchInput');
+            this.inputSearchNode.classList.add('search-input');
             
             this.inputSubmitNode = document.createElement('input');
             this.inputSubmitNode.setAttribute('type', 'submit');
             this.inputSubmitNode.setAttribute('value', 'Search');
 
-            Utills.appendNodes(this.formNode,
+            Utills.appendNodes(this.inputContainerNode,
                 this.inputSearchNode,
                 this.inputSubmitNode,
             )
-            Utills.appendNodes(inputSectionNode, this.formNode)
+            Utills.appendNodes(inputSectionNode, this.inputContainerNode)
             Utills.appendNodes(parent, inputSectionNode);
         }
         
@@ -347,6 +347,7 @@ window.addEventListener('load', () => {
                 lat : 0,
             }
             this.days = [];
+            this.address = '';
         }
 
         fillToday(data) {
@@ -413,41 +414,100 @@ window.addEventListener('load', () => {
             this.fillWeek(weekData);
         }
 
-        setLocation(long, lat) {
-            location.long = long;
-            location.lat = lat;
+        setLocation(location) {
+            this.location.long = location.lng;
+            this.location.lat = location.lat;
         }
+
+        get long() {
+            return this.location.long; 
+        }
+
+        get lat() {
+            return this.location.lat;
+        }
+
     }
 
-    const manager = new Manager();
+    class Connector {
+        
+        constructor() {
+            /* generate DOM structure and attach events */
+            this.manager = new Manager();
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-            let long = position.coords.longitude;
-            let lat = position.coords.latitude;
-            manager.setLocation(long, lat);
+            /* set api keys and proxy*/
+            this.googleMapAPIKey = 'AIzaSyDoYhVFl3m0T8SLmWdFxHZDOLiw7nMvg_M';
+            this.darkSkyAPIKey = '30babca7ccb92efe1f4309d7f1a58a79';
+            this.proxy = 'https://cors-anywhere.herokuapp.com/';
+            
+            /* init input autocomplite */
+            this.initMap();
+        }
 
-            const proxy = 'https://cors-anywhere.herokuapp.com/';
-            const api = `${proxy}https://api.darksky.net/forecast/30babca7ccb92efe1f4309d7f1a58a79/${lat},${long}`;
+        updateApiDarkSky(value) {
+            this.manager.setLocation(value);
+            this.apiDarkSky = 
+                `${this.proxy}https://api.darksky.net/forecast/${this.darkSkyAPIKey}/${this.manager.lat},${this.manager.long}`
+        }
 
-            fetch(api)
+        updateApiGoogleMaps(value) {
+            this.apiGoogleMaps =
+                `https://maps.googleapis.com/maps/api/geocode/json?address=${value}&key=${this.googleMapAPIKey}`;
+        }
+
+        makeRequest() {
+            fetch(this.apiGoogleMaps)
                 .then(response => {
                     return response.json();
                 })
                 .then(data => {
+                    console.log('data from google maps: \n');
                     console.log(data);
-                    manager.fillContent(data);
+                    this.updateApiDarkSky(data.results[0].geometry.location);
+                    return fetch(this.apiDarkSky);
                 })
-        });    
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('data from dark sky: \n');
+                    console.log(data);
+                    this.manager.fillContent(data);
+                });
+        }   
+
+        updateAutocomplete(input) {
+            this.autocomplite = new google.maps.places.Autocomplete(input);
+        }
+
+        initMap() {
+            const fillInAddress = () => {
+                console.log(this.autocomplite);
+                let place = this.autocomplite.getPlace();
+                console.log('place');
+                console.log(place);
+                this.updateApiGoogleMaps(place.formatted_address);
+                this.makeRequest();
+            }
+
+            let input = document.querySelector('.search-input');
+            this.autocomplite = new google.maps.places.Autocomplete(input);
+            this.autocomplite.addListener('place_changed', fillInAddress);
+            
+            let inputForm = document.querySelector('.input-container');
+            inputForm.addEventListener('submit', e => {
+                e.preventDefault();
+            });
+        }
+
+        static create() {
+            new Connector();
+        }
+        
     }
 
-    let initMap = () => {
-        let input = document.querySelector('.searchInput');
-        let autocomplite = new google.maps.places.Autocomplete(input);
-        console.log(autocomplite);
-    }
-
-    initMap();
+    /* start */
+    Connector.create();
 });
 
 /* AIzaSyDoYhVFl3m0T8SLmWdFxHZDOLiw7nMvg_M */

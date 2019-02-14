@@ -82,7 +82,7 @@ canvas {
     width: 90%;
 }
 
-.flex-form input[type="submit"] {
+.input-container input[type="submit"] {
     background-color: #263238cc;
     border: 1px solid #263238cc;
     color: #fff;
@@ -95,19 +95,19 @@ canvas {
     border-bottom-right-radius: 80px;
 }
 
-.flex-form input[type="submit"]:hover {
+.input-container input[type="submit"]:hover {
     background-color: rgba(0, 150, 136, 0.8);
     border: 1px solid rgba(0, 150, 136, 0.8);;
 }
 
-.flex-form {
+.input-container {
     display: -webkit-box;
     display: flex;
     box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.3);
     border-radius: 80px;
 }
 
-.flex-form > * {
+.input-container > * {
     border: 0;
     padding: 0 0 0 10px;
     background: #fff;
