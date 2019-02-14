@@ -54,8 +54,9 @@ window.addEventListener('load', () => {
         
         createCardNode(parent) {
             /* row */
-            let row = document.createElement('div');
-            row.classList.add('row');
+            this.temperatureSection = parent;
+            this.row = document.createElement('div');
+            this.row.classList.add('row');
 
             this.dayNode = document.createElement('h2');
             this.dayNode.classList.add('week-day');
@@ -65,9 +66,9 @@ window.addEventListener('load', () => {
             this.degreeSectionNode.classList.add('degree-section');
             
             this.tempDayNode = document.createElement('h2');
-            this.tempDayNode.classList.add('temperature-degree-day', 'deg-far');
+            this.tempDayNode.classList.add('temperature-degree-day');
             this.tempNightNode = document.createElement('h2');
-            this.tempNightNode.classList.add('temperature-degree-night', 'deg-far');
+            this.tempNightNode.classList.add('temperature-degree-night');
             
             Utills.appendNodes(this.degreeSectionNode, this.tempDayNode, this.tempNightNode);
 
@@ -75,21 +76,37 @@ window.addEventListener('load', () => {
             this.tempDescriptionNode = document.createElement('h2');
             this.tempDescriptionNode.classList.add('temperature-description');
             
-            Utills.attachIconNode.call(this, row, 64, 64);
-            Utills.appendNodes(row, this.dayNode);
-            Utills.appendNodes(row, this.degreeSectionNode);
-            Utills.appendNodes(row, this.tempDescriptionNode);
-            Utills.appendNodes(parent, row);
+            Utills.attachIconNode.call(this, this.row, 64, 64);
+            Utills.appendNodes(this.row, this.dayNode);
+            Utills.appendNodes(this.row, this.degreeSectionNode);
+            Utills.appendNodes(this.row, this.tempDescriptionNode);
+            Utills.appendNodes(parent, this.row);
         }
 
         static create(parent, count) {
             const tempSection = document.createElement('div');
-            tempSection.classList.add('temperature-section');
+            tempSection.classList.add('temperature-section', 'visibility-false');
             const week = [];
             for (let i = 0; i < count; i++) 
                 week.push(new Card(tempSection));
             Utills.appendNodes(parent, tempSection);
             return week;
+        }
+
+        animateIn() {
+            this.temperatureSection.classList.remove('visibility-false');
+            this.temperatureSection.classList.add('visibility-true');
+            this.row.classList.add('agent-2');
+            this.tempNightNode.classList.add('deg-far');
+            this.tempDayNode.classList.add('deg-far');
+        }
+
+        animateOut() {
+            this.temperatureSection.classList.remove('visibility-true');
+            this.temperatureSection.classList.add('visibility-false');
+            this.row.classList.remove('agent-2');
+            this.tempNightNode.classList.remove('deg-far');
+            this.tempDayNode.classList.remove('deg-far');
         }
         
         get tempDay() {
@@ -132,8 +149,8 @@ window.addEventListener('load', () => {
         
         createCardNode(parent) {            
             /* timezone-description */
-            let timezoneDescription = document.createElement('div');
-            timezoneDescription.classList.add('timezone-description');
+            this.timezoneDescriptionNode = document.createElement('div');
+            this.timezoneDescriptionNode.classList.add('timezone-description');
             
             this.locationNode = document.createElement('h1');
             this.locationNode.classList.add('location-timezone');
@@ -141,11 +158,10 @@ window.addEventListener('load', () => {
             this.dayNode = document.createElement('h2');  
 
             this.dayTemperature = document.createElement('h3');
-            this.dayTemperature.classList.add('deg-far');
 
             this.weatherDescription = document.createElement('h4');
 
-            Utills.appendNodes(timezoneDescription,
+            Utills.appendNodes(this.timezoneDescriptionNode,
                 this.locationNode,
                 this.dayNode,
                 this.dayTemperature,
@@ -153,8 +169,8 @@ window.addEventListener('load', () => {
             )
 
             /* day-description */
-            let dayDescription = document.createElement('div');
-            dayDescription.classList.add('day-description');
+            this.dayDescriptionNode = document.createElement('div');
+            this.dayDescriptionNode.classList.add('day-description');
 
             let descFirst = document.createElement('ul');
             descFirst.classList.add('desc-first');
@@ -185,19 +201,19 @@ window.addEventListener('load', () => {
                 this.visibilityNode,       
             )
 
-            Utills.appendNodes(dayDescription,
+            Utills.appendNodes(this.dayDescriptionNode,
                 descFirst,
                 descSecond,
             )
 
             /* location section */
-            let locationSection = document.createElement('div');
-            locationSection.classList.add('location-section');
+            this.locationSection = document.createElement('div');
+            this.locationSection.classList.add('location-section', 'visibility-false');
 
-            Utills.appendNodes(locationSection, timezoneDescription);
-            Utills.attachIconNode.call(this, locationSection, 128, 128);
-            Utills.appendNodes(locationSection, dayDescription);
-            Utills.appendNodes(parent, locationSection);            
+            Utills.appendNodes(this.locationSection, this.timezoneDescriptionNode);
+            Utills.attachIconNode.call(this, this.locationSection, 128, 128);
+            Utills.appendNodes(this.locationSection, this.dayDescriptionNode);
+            Utills.appendNodes(parent, this.locationSection);            
         }
 
         atachEventOnTemperature() {
@@ -217,6 +233,24 @@ window.addEventListener('load', () => {
 
         static create() {
             return new TodayDescription(container);
+        }
+
+        animateIn() {
+            this.locationSection.classList.remove('visibility-false');
+            this.locationSection.classList.add('visibility-true');
+            this.timezoneDescriptionNode.classList.add('agent-1');
+            this.iconCanvas.classList.add('agent-3');
+            this.dayDescriptionNode.classList.add('agent-2');
+            this.dayTemperature.classList.add('deg-far');
+        }
+
+        animateOut() {
+            this.locationSection.classList.remove('visibility-true');
+            this.locationSection.classList.add('visibility-false');
+            this.timezoneDescriptionNode.classList.remove('agent-1');
+            this.iconCanvas.classList.remove('agent-3');
+            this.dayDescriptionNode.classList.remove('agent-2');
+            this.dayTemperature.classList.remove('deg-far');
         }
 
         get cityLocation() {
@@ -365,6 +399,8 @@ window.addEventListener('load', () => {
             
             const icon = data.icon;
             Utills.setIcon(icon, today.iconCanvas);
+
+            today.animateIn();
         }
 
         fillWeek(data) {
@@ -382,6 +418,8 @@ window.addEventListener('load', () => {
                 cardDay.dayNode.addEventListener('click', () => {
                     this.fillToday(dayData);
                 });
+
+                cardDay.animateIn();
 
                 cardDay.degreeSectionNode.addEventListener('click', () => {
                     const node = cardDay.tempDayNode;
@@ -412,6 +450,13 @@ window.addEventListener('load', () => {
 
         updateCity(value) {
             this.description.cityLocation = value;
+        }
+
+        animateOut() {
+            this.description.animateOut();
+            this.week.forEach(day => {
+                day.animateOut();
+            });
         }
 
     }
@@ -473,6 +518,7 @@ window.addEventListener('load', () => {
 
         initInputAutocomplite() {
             const fillInAddress = () => {
+                this.manager.animateOut();
                 console.log(this.autocomplite);
                 let place = this.autocomplite.getPlace();
                 console.log('place');
