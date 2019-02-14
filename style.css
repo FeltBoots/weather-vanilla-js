@@ -304,6 +304,21 @@ span {
     visibility: hidden;
 }
 
+/* ---------- ERRORS ---------- */
+
+.isa-error {
+    margin: 10px 0px;
+    padding: 25px; 
+    position: absolute;
+    width: 50%;
+    left: 25%;
+    right: 0;
+    color: #D8000C;
+    background-color: #FFD2D2;
+    border-radius: 20px;
+    text-align: center;
+}
+
 /* ---------- MEDIA QUERIES ---------- */
 
 /* Big tablet to 1200px (width smaller that the 1140px row) */

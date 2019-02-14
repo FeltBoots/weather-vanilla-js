@@ -48,8 +48,10 @@ window.addEventListener('load', () => {
     class Card {
 	
         constructor(parent, create=true) {
-            if (create)
-                this.createCardNode(parent);
+            if (!create) // To do not create nodes when we call super in TodayDescription constructor
+                return;
+            this.createCardNode(parent);
+            this.atachEventOnTemperature();
         }
         
         createCardNode(parent) {
@@ -107,6 +109,32 @@ window.addEventListener('load', () => {
             this.row.classList.remove('agent-2');
             this.tempNightNode.classList.remove('deg-far');
             this.tempDayNode.classList.remove('deg-far');
+        }
+
+        atachEventOnTemperature() {
+            const node = this.degreeSectionNode;
+            node.addEventListener('click', () => {
+                console.log('click');
+                const node = this.tempDayNode;
+                const nodeNight = this.tempNightNode;
+                if (node.classList.contains('deg-far')) {
+                    node.classList.remove('deg-far');
+                    nodeNight.classList.remove('deg-far');
+                    node.classList.add('deg-cel');
+                    nodeNight.classList.add('deg-cel');
+                    const celsius = value => (value - 32) * (5 / 9);
+                    this.tempDay = celsius(this.tempDay);
+                    this.tempNight = celsius(this.tempNight);
+                } else {
+                    console.log('netu');
+                    node.classList.remove('deg-cel');
+                    nodeNight.classList.remove('deg-cel');
+                    node.classList.add('deg-far');
+                    nodeNight.classList.add('deg-far');
+                    this.tempDay = this.fixTempDay;
+                    this.tempNight = this.fixTempNight;
+                }
+            });
         }
         
         get tempDay() {
@@ -415,35 +443,20 @@ window.addEventListener('load', () => {
                 
                 cardDay.tempDay = temperatureMax;
                 cardDay.tempNight = temperatureMin;
+                cardDay.fixTempDay = temperatureMax;
+                cardDay.fixTempNight = temperatureMin;
 
                 cardDay.dayNode.addEventListener('click', () => {
                     this.fillToday(dayData);
                 });
 
                 cardDay.animateIn();
-
-                cardDay.degreeSectionNode.addEventListener('click', () => {
-                    const node = cardDay.tempDayNode;
-                    if (node.classList.contains('deg-far')) {
-                        node.classList.remove('deg-far');
-                        node.classList.add('deg-cel');
-                        const celsius = value => (value - 32) * (5 / 9);
-                        cardDay.tempDay = celsius(cardDay.tempDay);
-                        cardDay.tempNight = celsius(cardDay.tempNight);
-                    } else {
-                        node.classList.remove('deg-cel');
-                        node.classList.add('deg-far');
-                        cardDay.tempDay = temperatureMax;
-                        cardDay.tempNight = temperatureMin;
-                    }
-                });   
             });
         }
 
         fillContent(data) {
             let weekData = data.daily.data;
             this.timezone = data.timezone;
-            // this.currentTemperature = Math.round(data.currently.temperature);
             this.days = Day.createDays(weekData, this.timezone);
             this.fillToday(weekData[0]);
             this.fillWeek(weekData);
@@ -460,6 +473,27 @@ window.addEventListener('load', () => {
             });
         }
 
+    }
+
+    class ConnectApiError extends Error {
+        constructor(...args) {
+            super(...args)
+            Error.captureStackTrace(this, ConnectApiError)
+        }
+    }
+
+    class ParseError extends Error {
+        constructor(...args) {
+            super(...args)
+            Error.captureStackTrace(this, ConnectApiError)
+        }
+    }
+
+    class InternarLogicError extends Error {
+        constructor(...args) {
+            super(...args)
+            Error.captureStackTrace(this, ConnectApiError)
+        }
     }
 
     class Connector {
@@ -494,36 +528,54 @@ window.addEventListener('load', () => {
             this.manager.updateCity(value);
         }
 
+        showError(error) {
+            if (!this.errorMessage) {
+                this.errorMessage = document.createElement('div');
+                this.errorMessage.classList.add('isa-error');
+                container.appendChild(this.errorMessage);
+            }
+            this.errorMessage.textContent = 
+                `${error.message}\nPlease contact to developers in description below and have a nice day :)`;
+        }
+
         makeRequest() {
             fetch(this.apiGoogleMaps)
                 .then(response => {
-                    return response.json();
+                    if (response.ok)
+                        return response.json();
+                    throw new ConnectApiError('Sorry, it seems like Google Maps do not response.');
                 })
                 .then(data => {
-                    console.log('data from google maps: \n');
-                    console.log(data);
+                    if (!data)
+                        throw new ParseError('Sorry, it seems like data from Google Maps is not available.');
                     this.updateApiDarkSky(data.results[0].geometry.location);
                     this.currentAddress = data.results[0].address_components[0].long_name;
                     return fetch(this.apiDarkSky);
                 })
                 .then(response => {
-                    return response.json();
+                    if (response.ok)
+                        return response.json();
+                    throw new ConnectApiError('Sorry, it seems like DarkSky do not response.');
                 })
                 .then(data => {
-                    console.log('data from dark sky: \n');
-                    console.log(data);
-                    this.manager.fillContent(data);
-                    this.updateAddress(this.currentAddress);
+                    if (!data)
+                        throw new ParseError('Sorry, it seems like data from DarkSky is not available.');
+                    try {
+                        this.manager.fillContent(data);
+                        this.updateAddress(this.currentAddress);
+                    } catch(error) {
+                        throw new InternarLogicError('Sorry, it seems like some internal error happened.');
+                    }
+                })      
+                .catch(error => {
+                    this.showError(error);
                 });
         }   
 
         initInputAutocomplite() {
             const fillInAddress = () => {
                 this.manager.animateOut();
-                console.log(this.autocomplite);
                 let place = this.autocomplite.getPlace();
-                console.log('place');
-                console.log(place);
                 this.updateApiGoogleMaps(place.formatted_address);
                 this.makeRequest();
             }
@@ -546,13 +598,23 @@ window.addEventListener('load', () => {
                     this.updateApiDarkSky({lat : lat, lng: long });
                     fetch(this.apiDarkSky)
                         .then(response => {
-                            return response.json();
+                            if (response.ok)
+                                return response.json();
+                            throw new ConnectApiError('Sorry, it seems like DarkSky do not response.');
                         })
                         .then(data => {
-                            console.log(data);
-                            this.manager.fillContent(data);
-                            this.updateAddress(data.timezone);
+                            if (!data)
+                                throw new ParseError('Sorry, it seems like data from DarkSky is not available.');
+                            try {
+                                this.manager.fillContent(data);
+                                this.updateAddress(data.timezone);
+                            } catch(error) {
+                                throw new InternarLogicError('Sorry, it seems like some internal error happened.');
+                            }
                         })
+                        .catch(error => {
+                            this.showError(error);
+                        });
                 });    
             }
         }
@@ -566,5 +628,3 @@ window.addEventListener('load', () => {
     /* start */
     Connector.create();
 });
-
-/* AIzaSyDoYhVFl3m0T8SLmWdFxHZDOLiw7nMvg_M */
