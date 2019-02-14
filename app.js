@@ -318,6 +318,7 @@ window.addEventListener('load', () => {
             this.inputSearchNode = document.createElement('input');
             this.inputSearchNode.setAttribute('type', 'search');
             this.inputSearchNode.setAttribute('placeholder', 'Enter the name of the city');
+            this.inputSearchNode.classList.add('searchInput');
             
             this.inputSubmitNode = document.createElement('input');
             this.inputSubmitNode.setAttribute('type', 'submit');
@@ -363,7 +364,7 @@ window.addEventListener('load', () => {
             today.visibility = data.visibility;
             today.description = data.summary;
             today.temperature = Math.round(data.temperatureMax);
-            today.temperatureFer = today.temperature;
+            today.temperatureFer = Math.round(data.temperatureMax);
             
             const icon = data.icon;
             Utills.setIcon(icon, today.iconCanvas);
@@ -439,4 +440,14 @@ window.addEventListener('load', () => {
                 })
         });    
     }
+
+    let initMap = () => {
+        let input = document.querySelector('.searchInput');
+        let autocomplite = new google.maps.places.Autocomplete(input);
+        console.log(autocomplite);
+    }
+
+    initMap();
 });
+
+/* AIzaSyDoYhVFl3m0T8SLmWdFxHZDOLiw7nMvg_M */
