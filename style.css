@@ -129,6 +129,27 @@ input[type="search"] {
     flex-basis: 90%;
 }
 
+/* google map autocomplite */
+.pac-container {
+    background-color: #e5e8eb;
+    margin-top: 15px;
+}
+
+.pac-item-query,
+.pac-matched,
+.pac-icon,
+span { 
+    font-size: 20px; 
+    color: #4a6c8f;
+}
+
+.pac-item-selected {
+    background: #bfcedd;
+}
+
+.pac-item:hover {
+    background: #bfcedd;
+}
 
 /* ---------- LOCATION SECTION ---------- */
 
