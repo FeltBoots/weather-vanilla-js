@@ -155,6 +155,8 @@ span {
     display: flex;
     flex-direction: column;
     padding: 10px;
+    width: 30%;
+    align-items: center;
 }
 
 .timezone-description h1 {
@@ -321,10 +323,6 @@ span {
 
 /* Small tablet to big tablet: from 768px to 1023px */
 @media only screen and (max-width: 1023px) {
-    * {
-        font-size: 20px;
-    }
-    
     .weather-js {
         width: 96%;
     }
@@ -340,10 +338,6 @@ span {
 
 /* Small phones to small tablets from 0px to 767px */
 @media only screen and (max-width: 767px) {
-    * {
-        font-size: 22px;
-    }
-
     body {
         height: 1000px;
     }
@@ -355,6 +349,7 @@ span {
 
     .timezone-description {
         text-align: center;
+        width: 100%;
     }
 
     .timezone-description h1 {

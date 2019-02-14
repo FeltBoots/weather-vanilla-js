@@ -73,13 +73,13 @@ window.addEventListener('load', () => {
             Utills.appendNodes(this.degreeSectionNode, this.tempDayNode, this.tempNightNode);
 
             /* temperature-description */
-            this.tempDescriptionNode = document.createElement('h2');
-            this.tempDescriptionNode.classList.add('temperature-description');
+            // this.tempDescriptionNode = document.createElement('h2');
+            // this.tempDescriptionNode.classList.add('temperature-description');
             
             Utills.attachIconNode.call(this, this.row, 64, 64);
             Utills.appendNodes(this.row, this.dayNode);
             Utills.appendNodes(this.row, this.degreeSectionNode);
-            Utills.appendNodes(this.row, this.tempDescriptionNode);
+            // Utills.appendNodes(this.row, this.tempDescriptionNode);
             Utills.appendNodes(parent, this.row);
         }
 
@@ -145,6 +145,7 @@ window.addEventListener('load', () => {
             super(null, false);
             this.createCardNode(parentNode);
             this.atachEventOnTemperature();
+            this.timezone = '';
         }
         
         createCardNode(parent) {            
@@ -276,12 +277,12 @@ window.addEventListener('load', () => {
         }
 
         set sunrise(sunriseTime) {
-            const time = Utills.getTimeStamp(sunriseTime * 1000, this.cityLocation);
+            const time = Utills.getTimeStamp(sunriseTime * 1000, this.timezone);
             this.sunsetNode.innerHTML = `Sunset: <span>${time}</span>`;
         }
 
         set sunset(sunetTime) {
-            const time = Utills.getTimeStamp(sunetTime * 1000, this.cityLocation);
+            const time = Utills.getTimeStamp(sunetTime * 1000, this.timezone);
             this.sunriseNode.innerHTML = `Sunrise: <span>${time}</span>`;
         }
 
@@ -382,7 +383,8 @@ window.addEventListener('load', () => {
 
         fillToday(data) {
             const today = this.description;
-            today.cityLocation = this.timezone;
+            today.cityLocation = this.description.cityLocation;
+            today.timezone = this.timezone;
             today.dayName = this.days[0].fullDay;
 
             today.precipitation = data.precipProbability;
@@ -413,7 +415,6 @@ window.addEventListener('load', () => {
                 
                 cardDay.tempDay = temperatureMax;
                 cardDay.tempNight = temperatureMin;
-                cardDay.description = summary;
 
                 cardDay.dayNode.addEventListener('click', () => {
                     this.fillToday(dayData);
@@ -550,6 +551,7 @@ window.addEventListener('load', () => {
                         .then(data => {
                             console.log(data);
                             this.manager.fillContent(data);
+                            this.updateAddress(data.timezone);
                         })
                 });    
             }
